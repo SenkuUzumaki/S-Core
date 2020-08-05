@@ -1,0 +1,900 @@
+#
+#
+#
+#
+#
+#		     S Essentials made by Senku
+#					Just put hastags over or remove commands you dont want
+#						open source, if you're gonna create a version of this that is fine but please credit me
+#
+#
+#
+#				made with love ♥
+
+#
+#
+#		Ignore this, if you disable this the skript will run poorly!!!!
+#        (DO NOT TOUCH)
+#
+#
+
+on load:
+	execute console command "/gamerule sendCommandFeedback false"
+	execute console command "/gamerule doImmediateRespawn true"
+	execute console command "/gamerule showDeathMessages false"
+
+#
+#
+#		Your discord link!
+#
+#
+#
+#
+
+options:
+	discord: https:/discord.gg/discordserverhere
+
+#
+#
+#
+#				CHAT FORMAT ♥
+#
+# use %player% for player name (only player name not prefix) and use %message% for the message the player sends. The players rank prefix is before "&f|"
+#
+
+options:
+	chat format: &f| &7%player% &7» %message%
+
+#
+#
+#
+#				Join messsages!
+#
+#
+#
+
+Options:
+	joinprefix: &C&LSERVERNAME HERE
+
+#
+#
+#
+#				Nicked Chat Prefix
+#
+#
+#
+
+Options:
+	nickprefix: &8[&7Default&8] &f|
+
+#
+#               /// 	Do not edit past this point unless you know how to use skript (!) Will not help if this srkipt is edited! (!) Support privliges removed if edited (!) 	\\\                             
+#
+
+command /fly:
+	description: makes you fly
+	usage: &fWrong usage&c! &7/fly
+	permission: essentials.fly
+	trigger:
+		player is flying:
+			make player stop flying
+			message "&fFly disabled&c!"
+		player is not flying:
+			make player start flying
+			message "&fFly enabled&c!"
+
+command /heal [<player>]:
+	permission: essentials.heal
+	description: heal yourself or others
+	usage: &fWrong usage&c! &7/heal [player]
+	trigger:
+		if arg-1 is set:
+			heal arg-1
+			message "&fHealed &c%arg-1%&f sucessfully."
+			send "&fYou have been healed by &c%player%&f." to arg-1
+		else:
+			heal the player	
+			message "&fSurgery sucessfull."
+		
+command /gamemode <text>:
+	permission: essentials.gamemode.all
+	aliases: /gm
+	description: set your gamemode
+	usage: &fWrong usage&c! &7/gm (survival/creative/adventure/spectator)
+	trigger:
+		if arg-1 is not "creative" or "adventure" or "spectator" or "survival" or "c" or "a" or "s" or "sp":
+			message "&fWrong usage&c! &7/gm (survival/creative/adventure/spectator)"
+		if arg-1 is "creative" or "c":
+			set the player's game mode to creative
+			message "&fGamemode set to &cCreative&f."
+		if arg-1 is "adventure" or "a":
+			set the player's game mode to adventure
+			message "&fGamemode set to &cAdventure&f."
+		if arg-1 is "spectator" or "sp":
+			set the player's game mode to spectator
+			message "&fGamemode set to &cSpectator&f."
+		if arg-1 is "survival" or "s":
+			set the player's game mode to survival
+			message "&fGamemode set to &cSurvival&f."
+
+command /gmc:
+	permission: gamemode.creative
+	aliases: /gamemodecreative, /gamemodec
+	usage: &fWrong usage&c! &7/gmc
+	trigger:
+		set the player's gamemode to creative
+		message "&fGamemode set to &cCreative&f."
+
+command /gms:
+	permission: gamemode.survival
+	aliases: /gamemodesurvival, /gamemodes
+	usage: &fWrong usage&c! &7/gms
+	trigger:
+		set the player's gamemode to survival
+		message "&fGamemode set to &cSurvival&f."
+			
+command /gmsp:
+	permission: gamemode.spectator
+	aliases: /gamemodespectator, /gamemodesp
+	usage: &fWrong usage&c! &7/gmsp
+	trigger:
+		set the player's gamemode to spectator
+		message "&fGamemode set to &cSpectator&f."
+		
+command /gma:
+	permission: gamemode.adventure
+	aliases: /gamemodeadventure, gamemodea
+	usage: &fWrong usage&c! &7/gma 
+	trigger:
+		set the player's gamemode to adventure
+		message "&fGamemode set to &cAdventure&f."
+
+variables:
+	{god.%player%} = false
+on damage:
+	victim is a player:
+		if {god.%victim%} is true:
+			cancel event
+                
+command /godmode <text>:
+	aliases: /god, /invincible
+	usage: &fWrong usage&c! &7/god (on|off)
+	permission: essentials.god
+	trigger:
+		if arg-1 is not "on" or "off":
+			message "&fWrong usage&c! &7/god (on|off)"
+		if arg 1 is "on":
+			set {god.%player%} to true
+			message "&fGod mode &aenabled&c!"
+		if arg 1 is "off":
+			set {god.%player%} to false
+			message "&fGod mode &4disabled&c!"
+			
+command /feed [<player>]:
+	usage: &fWrong usage&c! &7/feed [player]
+	permission: essentials.feed
+	trigger:
+		if arg-1 is set:
+			feed arg-1
+			send "&c%arg-1% &fhas been fed successfully&c!" to player
+		else:
+			feed player
+			message "&fYou've been fed successfully&c!"
+
+#  nick skript made by senku
+# keyboard go brrrrrrrrrrr
+
+
+variables:
+        {nick.%player%} = false
+        {name.%player%} = text
+on chat:
+	if {nick.%player%} is true:
+		cancel event
+		broadcast "{@nickprefix} &7%{name.%player%}% &7» %message%"
+		stop
+
+command /nick <text>:
+	usage: &fWrong usage&c! &7/nick <name/off>
+	description: Used to set a nick name
+	permission: essentials.nick
+	aliases: /nickname, /newname, /name
+	trigger:
+		if arg-1 is set:
+			if arg-1 is "off":
+				set {prefix} to placeholder "vault_prefix"
+				message "&fNick disabled&c!"
+				set {nick.%player%} to false
+				set tab list name of player to "%{prefix}%%player%"
+				broadcast "&a+ %{prefix}%%player%"
+				broadcast "&c- &f%{name.%player%}%"
+			else:
+				set {prefix} to placeholder "vault_prefix"
+				message "&fNick set as &c%arg-1%&f!"
+				set {nick.%player%} to true
+				set {name.%player%} to arg-1
+				broadcast "&c- &f%{vault_prefix}%%player%"
+				wait 1.5 seconds
+				broadcast "&a+ &f{@nickprefix} %{name.%player%}%"
+				set tab list name of player to "{@nickprefix} &7%{name.%player%}%"
+				
+command /ci [<player>]:
+	usage: &fWrong usage&c! &7/ci [player]
+	permission: essentials.ci
+	aliases: /clear, /clearinventory, /clearinvent 
+	trigger:
+		if arg-1 is set:
+			execute console command "/minecraft:clear %arg-1%"
+			message "&fCleared &c%arg-1%'s&f inventory successfully&c!"
+		else:
+			make player execute "/minecraft:clear"
+			message "&fCleared your inventory successfully&c!"
+
+command /broadcast <text>:
+	usage: &fWrong usage&c! &7/broadcast (text)
+	aliases: /bc, /send, /notify
+	permission: essentials.broadcast
+	trigger:
+		if arg-1 is set:
+			broadcast ""
+			broadcast "&c%arg-1%"
+			broadcast ""
+
+command /testcore:
+	usage: &fWrong usage&c! &7/test
+	aliases: /testskript, /test, /ping, /pong, /hello, /are, /you, /there, /testessentials
+	description: used to see if the skript is working
+	permission: essentials.test
+	trigger:
+		message "&cF⚍ᓵꖌ ||𝙹⚍ リ╎⊣⊣ᔑ ╎ ⍑𝙹!¡ᒷ ||𝙹⚍ ↸╎ᒷ ʖ╎ℸ ̣ ᓵ⍑, &fthis means its working"
+			
+#
+#
+#
+#					S Broadcasts
+#						Senku's Skripts
+#								English version
+#										  Version 1.0
+
+
+Options:
+	bprefix: &cPunishment &8»
+	banprefix2: &cPunishment
+
+variables:
+	{mutedchat} = false
+	{muted.%player%} = false
+
+
+command /mutechat:
+	aliases: /chatmute, /muteall
+	permission: staff.mod
+	permission message: &chahaha meme go brrrrrrrrrrr
+	usage: {@bprefix} Wrong usage, do it like this &e/mutechat
+	trigger:
+		message "&cYou have now muted chat!"
+		broadcast "&8&m=================({@banprefix2}&8&m)================="
+		broadcast ""
+		broadcast "&fThe staff &c%player%&f has muted chat!"
+		broadcast ""
+		broadcast "&8&m=================({@banprefix2}&8&m)================="
+		set {mutedchat} to true
+
+on chat:
+	{mutedchat} is true:
+		player has permission "essentials.chat.muted.bypass":
+			stop
+		player does not have permission "essentials.chat.muted.bypass":
+			message "&cYou cannot talk while chat is muted!"
+			cancel event
+	{muted.%player%} is true:
+		player has permission "essentials.chat.muted.bypass":
+			stop
+		player does not have permission "essentials.chat.muted.bypass":
+			message "&cYou cannot talk while you are muted"
+			cancel event
+
+command /mute <offlineplayer> [<text>]:
+	permission: staff.helper
+	permission message: &cYou really thought you had perms for a sec?
+	usage: {@bprefix} Wrong usage, do it like this &e/mute <player> (reason)
+	trigger:
+		if arg-1 is set:
+			if arg-1 has permission "essentials.chat.muted.bypass":
+				message "&cThe player is immune to mutes!"
+			else:
+				message "&cYou have muted %arg-1%!"
+				send "&cYou are now muted by %player%!"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				broadcast ""
+				broadcast "&fThe staff &c%player%&f has muted &e%arg-1%"
+				broadcast ""
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				set {muted.%arg-1%} to true
+			if arg-2 is set:
+				if arg-1 has permission "essentials.chat.muted.bypass":
+					message "&cThe player is immune to mutes"
+				else:
+					message "&cYou have muted %arg-1% for %arg-2%!"
+					send "&cYou are now muted by %player% for %arg-2%!"
+					broadcast "&8&m=================({@banprefix2}&8&m)================="
+					broadcast ""
+					broadcast "&fThe staff &c%player%&f has muted &e%arg-1%&f for &e%arg-2%"
+					broadcast ""
+					broadcast "&8&m=================({@banprefix2}&8&m)================="
+					set {muted.%arg-1%} to true
+
+command /unmute <offlineplayer>:
+	usage: {@bprefix} Wrong usage, do it like this &e/umute <player>
+	permission: staff.helper
+	permission message: &cYou really thought you had perms for a sec?
+	trigger:
+		if arg-1 is set:
+			message "&cYou have unmuted %arg-1%"
+			send "&cYou are now unmuted by %player%"
+			broadcast "&8&m=================({@banprefix2}&8&m)================="
+			broadcast ""
+			broadcast "&fThe staff &c%player%&f has unmuted &e%arg-1%"
+			broadcast ""
+			broadcast "&8&m=================({@banprefix2}&8&m)================="
+			set {muted.%arg-1%} to false
+	
+
+
+
+command /warn <offlineplayer> <text>:
+    permission: staff.helper
+    permission message: &cNope.
+    usage: {@bprefix} wrong usage, do it like this &e/warn <player> <reason>
+    trigger:
+        if arg-1 is set:
+            if arg-2 is set:
+                send "&7You have been warned for &e%arg-2%" to arg-1
+                send "&7You have warned &e%arg-1%"
+                broadcast "&8&m=================({@banprefix2}&8&m)================="
+                broadcast "&f"
+                broadcast "&f&e%arg-1% &7has been warned for &e%arg-2%"
+                broadcast "&f"
+                broadcast "&8&m=================({@banprefix2}&8&m)================="
+                log "%arg-1% was warned" to "warns/kicks.log"
+                add 1 to {warns.%arg-1%}
+				
+command /ban <offlineplayer> <text>:
+	permission: staff.mod
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/ban <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been banned for &e%arg-2%" to arg-1
+				send "&7You have banned &e%arg-1%"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				broadcast "&f"
+				broadcast "&f&e%arg-1% &7has been perma-banned for &e%arg-2%"
+				broadcast "&f"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				kick arg 1 due to "&cBanned&7 for &e%arg-2%"
+				ban arg-1 due to "&cBanned&7 for &e%arg-2%"
+				log "%arg-1% was banned" to "bans/ip-bans.log"
+				add 1 to {bans.%arg-1%}
+
+command /unban <offlineplayer>:
+	permission: staff.mod
+	permission message: &cNope.
+	aliases: /pardon, /forgive, /forgave
+	usage: {@bprefix} wrong usage, do it like this &e/unban <player>
+	trigger:
+		if arg-1 is set:
+			send "&7You have banned &e%arg-1%"
+			broadcast "&8&m=================({@banprefix2}&8&m)================="
+			broadcast "&f"
+			broadcast "&f&e%arg-1% &7has been unbanned"
+			broadcast "&f"
+			broadcast "&8&m=================({@banprefix2}&8&m)================="
+			unban arg-1
+			execute console command "/essentials:pardon %arg-1%"
+			log "%arg-1% was unbanned" to "unbans.log"
+			add 1 to {unbans.%arg-1%}
+
+command /banip <offlineplayer> <text>:
+	aliases: /ipban
+	permission: staff.mod
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/ipban <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been ip-banned for &e%arg-2%" to arg-1
+				send "&7You have ip-banned &e%arg-1%"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				broadcast "&f"
+				broadcast "&f&e%arg-1% &7has been perma-ip-banned for &e%arg-2%"
+				broadcast "&f"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				kick arg 1 due to "&cBanned&7 for &e%arg-2%"
+				IP-ban arg-1 due to "&cIP-Banned&7 for &e%arg-2%"
+				log "%arg-1% was ip-banned" to "bans/ip-bans.log"
+				add 1 to {ipbans.%arg-1%}
+
+command /kick <player> <text>:
+	permission: staff.helper
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/kick <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been kicked for &e%arg-2%" to arg-1
+				send "&7You have kicked &e%arg-1%"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				broadcast "&f"
+				broadcast "&f&e%arg-1% &7has been kicked for &e%arg-2%"
+				broadcast "&f"
+				broadcast "&8&m=================({@banprefix2}&8&m)================="
+				kick arg 1 due to "&cKicked&7 for &e%arg-2%"
+				log "%arg-1% was kicked" to "warns/kicks.log"
+				add 1 to {kicks.%arg-1%}
+				
+command /check <offlineplayer>:
+	permission: staff.mod
+	permission message: &cNope.
+	aliases: /history, /bans, /kicks, /warns, /unbans, /ipbans
+	usage: {@bprefix} wrong usage, do it like this &e/check <player>
+	trigger:
+		if arg-1 is set:
+			message "&8&m=================({@banprefix2}&8&m)================="
+			message ""
+			message "&e%arg-1%'s &flogs"
+			message ""
+			message "&cWarns&8: %{warns.%arg-1%}%"
+			message "&cKicks&8: %{kicks.%arg-1%}%"
+			message "&cBans&8: %{bans.%arg-1%}%"
+			message "&cBans&8: %{ipbans.%arg-1%}%"
+			message "&cUnbans&8: %{unbans.%arg-1%}%"
+			message ""
+			message "&8&m=================({@banprefix2}&8&m)================="
+#
+#
+#
+#				Silent Punishments
+#
+#
+#
+
+command /swarn <offlineplayer> <text>:
+    permission: staff.helper
+    permission message: &cNope.
+    usage: {@bprefix} wrong usage, do it like this &e/warn <player> <reason>
+    trigger:
+        if arg-1 is set:
+            if arg-2 is set:
+                send "&7You have been warned for &e%arg-2%" to arg-1
+                send "&7You have warned &e%arg-1%"
+                log "%arg-1% was warned" to "warns/kicks.log"
+                add 1 to {warns.%player%}
+				
+command /sban <offlineplayer> <text>:
+	permission: staff.mod
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/ban <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been banned for &e%arg-2%" to arg-1
+				send "&7You have banned &e%arg-1%"
+				kick arg 1 due to "&cBanned&7 for &e%arg-2%"
+				ban arg-1 due to "&cBanned&7 for &e%arg-2%"
+				log "%arg-1% was banned" to "bans/ip-bans.log"
+				add 1 to {bans.%player%}
+
+command /sunban <offlineplayer>:
+	permission: staff.mod
+	permission message: &cNope.
+	aliases: /spardon, /sforgive, /sforgave
+	usage: {@bprefix} wrong usage, do it like this &e/unban <player>
+	trigger:
+		if arg-1 is set:
+			send "&7You have banned &e%arg-1%"
+			unban arg-1
+			execute console command "/essentials:pardon %arg-1%"
+			log "%arg-1% was unbanned" to "unbans.log"
+			add 1 to {unbans.%player%}
+
+command /sbanip <offlineplayer> <text>:
+	aliases: /sipban
+	permission: staff.mod
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/ipban <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been ip-banned for &e%arg-2%" to arg-1
+				send "&7You have ip-banned &e%arg-1%"
+				kick arg 1 due to "&cBanned&7 for &e%arg-2%"
+				IP-ban arg-1 due to "&cIP-Banned&7 for &e%arg-2%"
+				log "%arg-1% was ip-banned" to "bans/ip-bans.log"
+				add 1 to {ipbans.%player%}
+
+command /skick <player> <text>:
+	permission: staff.helper
+	permission message: &cNope.
+	usage: {@bprefix} wrong usage, do it like this &e/kick <player> <reason>
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				send "&7You have been kicked for &e%arg-2%" to arg-1
+				send "&7You have kicked &e%arg-1%"
+				kick arg 1 due to "&cKicked&7 for &e%arg-2%"
+				log "%arg-1% was kicked" to "warns/kicks.log"
+				add 1 to {kicks.%player%}
+
+command /day:
+	permission: essentials.day
+	usage: &fWrong usage&c! &7/day
+	trigger:
+		make player execute command "/minecraft:time set day"
+		message "&fTime set to day&c!"
+		
+command /night:
+	permission: essentials.night
+	usage: &fWrong usage&c! &7/night
+	trigger:
+		make player execute command "/minecraft:time set night"
+		message "&fTime set to night&c!"
+		
+command /sun:
+	permission: essentials.sun
+	usage: &fWrong usage&c! &7/sun
+	trigger:
+		make player execute command "/minecraft:weather clear"
+		message "&fWeather set to sunny&c!"
+
+command /rain:
+	permission: essentials.rain
+	usage: &fWrong usage&c! &7/rain
+	trigger:
+		make player execute command "/minecraft:weather rain"
+		message "&fWeather set to rainy&c!"
+
+on chat:
+	player has permission "essentails.chat.white":
+		set {prefix} to placeholder "vault_prefix"
+		set the chat format to "%{prefix}%&f%player% &7» &f%message%"
+	else:
+		set the chat format to "%{prefix}%&f| &7%player% &7» %message%"
+		set {prefix} to placeholder "vault_prefix"
+
+#
+#
+#
+#			Senku's config
+#				S Join Events
+#						Version 1.0
+#								English	
+#
+# 
+	
+on first join:
+	broadcast "{@joinprefix} &8» &e%player% &fHas joined for the first time&c&l!"
+	give diamond named "&bGood Luck Charm" to the player
+	set join message to ""
+	set {kills.%player%} to 0
+	set {bans.%player%} to 0
+	set {warns.%player%} to 0
+	set {kicks.%player%} to 0
+	set {ipbans.%player%} to 0
+	set {unbans.%player%} to 0
+
+on join:
+	if {silent.%player%} is true:
+		set join message to ""
+		send "&8&l&m=======================================" to player
+		send "&r" to player
+		send "                        {@joinprefix}" to player
+		send "                  &7Welcome &e%player%"
+		send "                  &7Online players:&f %number of all players%" to player
+		send "&r" to player
+		send "&8&l&m=======================================" to player
+	if {silent.%player%} is false:
+		set {prefix} to placeholder "vault_prefix"
+		set join message to "&a+ &f%{prefix}% %player%"
+		make the player execute command "/spawn"
+		set tab list name of player to "&7Player &f| &7%player%"
+		send "&8&l&m=======================================" to player
+		send "&r" to player
+		send "                        {@joinprefix}" to player
+		send "                  &7Welcome &e%player%"
+		send "                  &7Online players:&f %number of all players%" to player
+		send "&r" to player
+		send "&8&l&m=======================================" to player
+	
+on quit:
+	set {prefix} to placeholder "vault_prefix"
+	set quit message to "&a+ &f%{prefix}% %player%"
+	
+command /ec [<player>]:
+	permission: essentials.enderchest
+	usage: &fWrong usage&c! &7/ec [player]
+	aliases: /enderchest, /echest
+	trigger:
+		if arg-1 is set:
+			open arg-1's ender chest to the player
+			message "&fEnder chest opened&c!"
+			play sound "block.ender_chest.open" to the player
+		else:
+			open the player's ender chest to the player
+			play sound "block.ender_chest.open" to the player
+			message "&fEnder chest opened&c!"
+
+command /cc:
+	usage: &fWrong usage&c! &7/cc
+	aliases: /clearchat, /chatclear, /cclear, /clearc
+	description: Clear chat for all players
+	permission: essentials.clearchat
+	trigger:
+		loop 300 times:
+			broadcast " "
+		broadcast "&8&m========================================="
+		broadcast "&fThe administrator &c%player% &fhas cleared chat"
+		broadcast "&8&m========================================="
+
+command /scc:
+	usage: &fWrong usage&c! &7/cc
+	aliases: /sclearchat, /schatclear, /scclear, /sclearc, /silentclear, /silentclearchat
+	description: Clear chat for all players
+	permission: essentials.clearchat
+	trigger:
+		loop 300 times:
+			broadcast " "
+
+
+command /setspawn:
+	usage: &fWrong usage&c!&7 /setspawn
+	aliases: /spawnset, /setworldspawn, /sethub, /setlobby
+	permission: essentials.setspawn
+	description: Sets a server spawn
+	trigger:
+		set {spawn} to location of block at location of player
+		message "&fSet spawn to &c%{spawn}%&f successfully&c!"
+
+command /spawn:
+	permission: essentials.setspawn
+	usage: %fWrong usage&c! &7/spawn
+	aliases: /spawnteleport, /mainarea
+	description: Teleports you to spawn
+	trigger:
+		teleport player to {spawn}
+		message "&fTeleported to spawn succesfully&c!"
+
+command /pl:
+	description: Rlly u gon try dat
+	trigger:
+		message "&fPlugins (69420): &aDid&f, &aYou&f, &aThink&f, &aThat&f, &aWas&f, &aGonna&f, &aWork?"
+
+command /plugins:
+	description: Rlly u gon try dat
+	trigger:
+		message "&fPlugins (69420): &aDid&f, &aYou&f, &aThink&f, &aThat&f, &aWas&f, &aGonna&f, &aWork?"
+
+command /bukkit:
+	description: Rlly u gon try dat
+	trigger:
+		message "&fPlugins (69420): &aDid&f, &aYou&f, &aThink&f, &aThat&f, &aWas&f, &aGonna&f, &aWork?"
+
+command /i <text>:
+	aliases: /item, /get
+	permission: essentials.give
+	usage: &fWrong usage&c! &7/i (item)
+	trigger:
+		if arg-1 is set:
+			message "&c%arg-1% &fgiven successfully&c!"
+			execute console command "/minecraft:give %player% %arg-1% 1"
+
+command /tphere <player>:
+	aliases: /tpplayerhere
+	permission: essentials.tp
+	usage: &fWrong usage&c! &7/tphere (player)
+	trigger:
+		if arg-1 is set:
+			message "&fTped &c%arg-1%&f to you successfully&c!"
+			execute console command "/minecraft:tp %arg-1% %player%"
+			
+command /tp <player>:
+	aliases: /tp
+	permission: essentials.tp
+	usage: &fWrong usage&c!&7 /tp (player)
+	trigger:
+		if arg-1 is set:
+			message "&fTped to &c%arg-1%&f successfully&c!"
+			make player execute command "/minecraft:tp %arg-1%"
+			stop
+
+command /rules:
+	permission: essentials.rules
+	aliases: /rulesoftheserver, /serverrules, /laws
+	usage: &fWrong usage&c! &7/rules
+	trigger:
+		message "&8&m========================================="
+		message ""
+		message "No disrespecting&c! "
+		message "Use common sense&c! "
+		message "Dont swear&c! "
+		message "Say only what you would irl&c! "
+		message "Dont hack&c! "
+		message ""
+		message "&8&m========================================="
+		
+	
+on break:
+	player has permission "essentials.break":
+		stop
+	else:
+		cancel event
+
+options:
+    Title: &c&lSERVERNAME HERE
+    
+every second:
+    loop all players:
+        wipe loop-player's sidebar
+        set name of sidebar of loop-player to "{@Title}"
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 15
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 14
+        set score "&r                      " in sidebar of loop-player to 13
+        set score "&c&lKILLS&f:" in sidebar of loop-player to 11
+        set score "    &c%{kills.%loop-player%}%" in sidebar of loop-player to 10
+        set score "&r                " in sidebar of loop-player to 9
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 8
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 7
+        set score "&r                     " in sidebar of loop-player to 6
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 5
+        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 4
+        set score "&r                    " in sidebar of loop-player to 3
+        set score "&7&lPLAYERS ONLINE&f:" in sidebar of loop-player to 2
+        set score "    &f%number of all players%/10" in sidebar of loop-player to 1
+			
+command /essentials <text>:
+	usage: &fWrong usage&c! &7/essentials <commands/help/reload>
+	aliases: /ess, /defaultcommands, /commands
+	permission: essentials.core
+	trigger:
+		if arg-1 is set:
+			if arg-1 is "reload":
+				make player execute "/skript reload core"
+
+every 5 minutes:
+	broadcast "&8&m========================================="
+	broadcast ""
+	broadcast "        &fHave you joined our &9Discord?"
+	broadcast "                 &9/discord"
+	broadcast ""
+	broadcast "&8&m========================================="
+
+
+command /fix:
+	permission: essentials.fix
+	aliases: /repair
+	cooldown: 30 seconds
+	cooldown message: &fPlease wait &c30&f seconds before repeating&c!
+	usage: &fWrong usage&c!
+	trigger:
+		repair tool of player
+		message "&fFixed item successfully&c!"
+
+ 
+command /discord:
+  aliases: /apply, /discordlink, /support, /help
+  cooldown: 5 seconds
+  usage: &fWrong usage&c! &7/discord
+  cooldown message: &fPlease wait &c5&f seconds before repeating&c!
+  trigger:
+    message "&8&m==================================================="
+    message ""
+    message "<link:{@discord}><tooltip:&9Our discord!>&fClick here to enter our &9Discord&f to apply, or to get support&c!"
+    message ""
+    message "&8&m==================================================="
+	
+on join:
+	create bossbar titled "&ewww.yourshop.tebex.io" and id "welcome.%player's uuid%" for player with progress 100 with colors purple
+	halt 5 ticks
+	loop 100 times:
+		set {_Value} to value of bossbar "welcome.%player's uuid%"
+		remove 1 from {_Value}
+		set bossbar "welcome.%player's uuid%" value to {_Value}
+		wait 3 ticks
+	remove bossbar "welcome.%player's uuid%"
+
+command /report <player> <text>:
+	usage: &fWrong usage&c! &7/report <player> <reason>
+	description: reports
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				loop all players:
+					loop-player has the permission "essentials.report.check"
+					message "&c%arg-1% &fHas been reported for &c%arg 2%&f by &c%player%" to loop-player
+				message "&fYour report has been sent to all &cstaff&f online&c!"
+
+command /staffchat <text>:
+	aliases: /sc, /a
+	usage: &fWrong usage&c! &7/sc (message)
+	permission: essentials.staffchat
+	trigger:
+		if arg-1 is set:
+			loop all players:
+				if loop-player has permission "essentials.staffchat":
+					send "&cStaffChat &8» &f%player's display name%&7: &f%arg 1%" to loop-player
+
+command /giveaway <text>:
+	aliases: /giveaway
+	usage: &fWrong usage&c! &7/giveaway (item)
+	permission: essentials.host.giveaway
+	trigger:
+		if arg-1 is set:
+			broadcast "&e&lGIVEAWAY&f: Picking winner in &c3&f."
+			make player execute command "/playsound minecraft:block.note_block.pling ambient @a"
+			wait 1 seconds
+			broadcast "&e&lGIVEAWAY&f: Picking winner in &c2&f.."
+			make player execute command "/playsound minecraft:block.note_block.pling ambient @a"
+			wait 1 seconds
+			broadcast "&e&lGIVEAWAY&f: Picking winner in &c1&f..."
+			make player execute command "/playsound minecraft:block.note_block.pling ambient @a"
+			wait 1 second
+			set {random} to random player out of all players
+			broadcast "&e&lGIVEAWAY&f: &fCongratulations &e%{random}%&f you have won&e %arg-1%&c&l!"
+			set {_int} to random integer between 1 and 64
+			set {_item} to "%{_int}% %arg-1%" parsed as item
+			give {_item} to {random}
+			make player execute command "/playsound minecraft:item.totem.use ambient @a"
+			wait 1 second
+
+command /sethome:
+	permission: essentials.sethome
+	usage: &fWrong usage&c! &7/sethome
+	trigger:
+		set {home.%player%} to location of player
+		message "&fHome set succesfully&c!"
+
+command /home:
+	permission: essentials.home
+	usage: &FWrong usage&c!&7 /home
+	trigger:
+		if {home.%player%} is not set:
+			message "&c&lERROR 404&f: Could not find home, set a home first&c!"
+			stop
+		else:
+			teleport player to {home.%player%}
+			message "&fTeleported to your home succesfully&c!"
+
+command /delhome:
+	permission: essentials.delhome
+	usage: &fWrong usage&c!&7 /delhome
+	trigger:
+		if {home.%player%} is not set:
+			message "&c&lERROR 404&f: Could not find home, set a home first&c!"
+			stop
+		else:
+			delete {home.%player%}
+			message "&fHome removed succesfully&c!"
+
+on death:
+	victim is a player:
+		broadcast "&c%victim%&f Just died (waht a noob)&c!"
+		attacker is a player:
+			broadcast "&c%attacker%&f Just killed &c%victim% &f(waht a chad)"
+			add 1 to {kills.%attacker%}
+
+on chat:
+	if message contains "shit" or "fuck" or "gay" or "idiot" or "butt" or "jerk" or "damn" or "shit" or "fack" or "bastard" or "mother fucker" or "fucker" or "dick" or "cock" or "bitch" or "cunt" or "fuck off" or "nigga" or "nigger" or "stfu" or "shut the fuck up" or "fck" or "wtf" or "what the fuck" or "fuck you" or "fok" or "homo" or "asf" or "pennis" or "rape" or "porn" or "prn" or "peni" or "sex" or "piss" or "ass" or "sht" or "feg" or "tits" or "fyc" or "anal" or "fap" or "ffs" or "sx" or "aids" or "mofo" or "niggah" or "lesbian" or "ngga" or "dumbass" or "dumb" or "fucking" or "pussy" or "pussies" or "cancer" or "net" or "com" or "xyz" or "biz" or "serv.nu" or "tebex" or "io" or "no" or "de" or "uk.to" or "us.to": 
+		if player has permission "essentials.chat.bypass":
+			stop
+		else:
+			set {playerswore} to player
+			cancel event
+			loop all players:
+				loop-player has permission "essentials.chat.check"
+				message "&c[&f%{playerswore}% Just swore or advertised!&c]" to loop-player
+
+every 10 minutes:
+	execute console command "/cc"
+
+

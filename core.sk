@@ -3,14 +3,11 @@
 #
 #
 #
-#		     S Essentials made by Senku
-#					Just put hastags over or remove commands you dont want
-#						open source, if you're gonna create a version of this that is fine but please credit me
+#		     S Core made by Senku
 #
 #
 #
 #				made with love ♥
-
 #
 #
 #		Ignore this, if you disable this the skript will run poorly!!!!
@@ -18,10 +15,78 @@
 #
 #
 
+#
+#
+#
+#		Should console clear chat every ten minutes? Reccomended for bigger servers to keep chat clean
+#
+#
+variables:
+# True/False only!
+	{consoleclearchat} = true
+
+
+
+command /♣A»♥☺♠♣♦┌▲setprefixdflkafdlkgjk&suffix:
+	trigger:
+		if sender is console:
+			set {prefix} to placeholder "vault_prefix"
+			set {suffix} to placeholder "vault_suffix"
+		if sender is player:
+			message "&cERROR, This is a console only command!"
+
 on load:
+	execute console command "/♣A»♥☺♠♣♦┌▲setprefixdflkafdlkgjk&suffix"
 	execute console command "/gamerule sendCommandFeedback false"
-	execute console command "/gamerule doImmediateRespawn true"
 	execute console command "/gamerule showDeathMessages false"
+
+
+
+#
+#
+#		Bossbar (Delete if you dont have SkRayFall)
+#
+#
+
+options:
+	websitelink: www.yourshop.tebex/craftingstore.net/io
+
+on join:
+	create bossbar titled "{@websitelink}" and id "welcome.%player's uuid%" for player with progress 100 with colors purple
+	halt 5 ticks
+	loop 100 times:
+		set {_Value} to value of bossbar "welcome.%player's uuid%"
+		remove 1 from {_Value}
+		set bossbar "welcome.%player's uuid%" value to {_Value}
+		wait 3 ticks
+	remove bossbar "welcome.%player's uuid%"
+
+#
+#
+# 	Rules message
+#
+#
+
+# Only edit what is between the two hastags unless you know what you're doing
+
+command /rules:
+	permission: essentials.rules
+	aliases: /rulesoftheserver, /serverrules, /laws
+	usage: &fWrong usage&c! &7/rules
+	trigger:
+# The lines under this will be displayed to the player 
+		message "&8&m========================================="
+		message ""
+		message "No disrespecting&c! "
+		message "Use common sense&c! "
+		message "Dont swear&c! "
+		message "Say only what you would irl&c! "
+		message "Dont hack&c! "
+		message ""
+		message "&8&m========================================="
+#
+
+
 
 #
 #
@@ -39,11 +104,13 @@ options:
 #
 #				CHAT FORMAT ♥
 #
-# use %player% for player name (only player name not prefix) and use %message% for the message the player sends. The players rank prefix is before "&f|"
+# use %player% for player name (only player name, not prefix) use %{prefix}% for prefix and %{suffix}% for players suffix
+# ChatPrefixWhite is for players who have the "essentials.chat.white" permission
 #
 
 options:
-	chat format: &f| &7%player% &7» %message%
+	chatprefix: %{prefix}% %player% &7» %message%
+	chatprefixwhite: %{prefix}% %player% &7» &f%message%
 
 #
 #
@@ -59,13 +126,43 @@ Options:
 #
 #
 #
-#				Nicked Chat Prefix
-#
+#				NickPrefix is the chat prefix, nickrank is the rank nicked players will have
+#					
 #
 #
 
 Options:
-	nickprefix: &8[&7Default&8] &f|
+	nickprefix: &7Default %player% &7» %message%
+	nickrank: &7Default
+
+#
+#
+#
+#		Scoreboard (Remove this if you dont have SkRayFall)
+#
+#
+#
+
+every second:
+    loop all players:
+        wipe loop-player's sidebar
+# Edit only between the hashtags (Sidenote: Each line has to be unique or it will just skip the line, so if u want to have multiple empty lines put "&r" and "&r&r" or "&r" and "&r " and so on)
+        set name of sidebar of loop-player to "&c&lSERVER NAME HERE"
+        set score "&c&oAdd your stuff here i guess" in sidebar of loop-player to 15
+        set score "&6&oAdd your stuff here i guess" in sidebar of loop-player to 14
+        set score "&r                      " in sidebar of loop-player to 13
+        set score "&c&lKILLS&f:" in sidebar of loop-player to 11
+        set score "    &c%{kills.%loop-player%}%" in sidebar of loop-player to 10
+        set score "&r                " in sidebar of loop-player to 9
+        set score "&e&oAdd your stuff here i guess" in sidebar of loop-player to 8
+        set score "&a&oAdd your stuff here i guess" in sidebar of loop-player to 7
+        set score "&r                     " in sidebar of loop-player to 6
+        set score "&9&oAdd your stuff here i guess" in sidebar of loop-player to 5
+        set score "&5&oAdd your stuff here i guess" in sidebar of loop-player to 4
+        set score "&r                    " in sidebar of loop-player to 3
+        set score "&7&lPLAYERS ONLINE&f:" in sidebar of loop-player to 2
+        set score "    &f%number of all players%/10" in sidebar of loop-player to 1
+# Edit only between the hashtags
 
 #
 #               /// 	Do not edit past this point unless you know how to use skript (!) Will not help if this srkipt is edited! (!) Support privliges removed if edited (!) 	\\\                             
@@ -191,7 +288,7 @@ variables:
 on chat:
 	if {nick.%player%} is true:
 		cancel event
-		broadcast "{@nickprefix} &7%{name.%player%}% &7» %message%"
+		broadcast "{@nickprefix}"
 		stop
 
 command /nick <text>:
@@ -207,7 +304,7 @@ command /nick <text>:
 				set {nick.%player%} to false
 				set tab list name of player to "%{prefix}%%player%"
 				broadcast "&a+ %{prefix}%%player%"
-				broadcast "&c- &f%{name.%player%}%"
+				broadcast "&c- {@nickrank} %{name.%player%}%"
 			else:
 				set {prefix} to placeholder "vault_prefix"
 				message "&fNick set as &c%arg-1%&f!"
@@ -215,8 +312,8 @@ command /nick <text>:
 				set {name.%player%} to arg-1
 				broadcast "&c- &f%{vault_prefix}%%player%"
 				wait 1.5 seconds
-				broadcast "&a+ &f{@nickprefix} %{name.%player%}%"
-				set tab list name of player to "{@nickprefix} &7%{name.%player%}%"
+				broadcast "&a+ &f{@nickrank} %{name.%player%}%"
+				set tab list name of player to "{@nickrank} %{name.%player%}%"
 				
 command /ci [<player>]:
 	usage: &fWrong usage&c! &7/ci [player]
@@ -556,12 +653,10 @@ command /rain:
 		message "&fWeather set to rainy&c!"
 
 on chat:
-	player has permission "essentails.chat.white":
-		set {prefix} to placeholder "vault_prefix"
-		set the chat format to "%{prefix}%&f%player% &7» &f%message%"
-	else:
-		set the chat format to "%{prefix}%&f| &7%player% &7» %message%"
-		set {prefix} to placeholder "vault_prefix"
+	player has permission "essentials.chat.white":
+		set the chat format to "{@chatprefixwhite}"
+	player does not have permission "essentials.chat.white":
+		set the chat format to "{@chatprefix}"
 
 #
 #
@@ -708,21 +803,6 @@ command /tp <player>:
 			make player execute command "/minecraft:tp %arg-1%"
 			stop
 
-command /rules:
-	permission: essentials.rules
-	aliases: /rulesoftheserver, /serverrules, /laws
-	usage: &fWrong usage&c! &7/rules
-	trigger:
-		message "&8&m========================================="
-		message ""
-		message "No disrespecting&c! "
-		message "Use common sense&c! "
-		message "Dont swear&c! "
-		message "Say only what you would irl&c! "
-		message "Dont hack&c! "
-		message ""
-		message "&8&m========================================="
-		
 	
 on break:
 	player has permission "essentials.break":
@@ -730,27 +810,11 @@ on break:
 	else:
 		cancel event
 
-options:
-    Title: &c&lSERVERNAME HERE
-    
-every second:
-    loop all players:
-        wipe loop-player's sidebar
-        set name of sidebar of loop-player to "{@Title}"
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 15
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 14
-        set score "&r                      " in sidebar of loop-player to 13
-        set score "&c&lKILLS&f:" in sidebar of loop-player to 11
-        set score "    &c%{kills.%loop-player%}%" in sidebar of loop-player to 10
-        set score "&r                " in sidebar of loop-player to 9
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 8
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 7
-        set score "&r                     " in sidebar of loop-player to 6
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 5
-        set score "&7&oAdd your stuff here i guess" in sidebar of loop-player to 4
-        set score "&r                    " in sidebar of loop-player to 3
-        set score "&7&lPLAYERS ONLINE&f:" in sidebar of loop-player to 2
-        set score "    &f%number of all players%/10" in sidebar of loop-player to 1
+on build:
+	player has permission "essentials.build":
+		stop
+	else:
+		cancel event
 			
 command /essentials <text>:
 	usage: &fWrong usage&c! &7/essentials <commands/help/reload>
@@ -793,15 +857,6 @@ command /discord:
     message ""
     message "&8&m==================================================="
 	
-on join:
-	create bossbar titled "&ewww.yourshop.tebex.io" and id "welcome.%player's uuid%" for player with progress 100 with colors purple
-	halt 5 ticks
-	loop 100 times:
-		set {_Value} to value of bossbar "welcome.%player's uuid%"
-		remove 1 from {_Value}
-		set bossbar "welcome.%player's uuid%" value to {_Value}
-		wait 3 ticks
-	remove bossbar "welcome.%player's uuid%"
 
 command /report <player> <text>:
 	usage: &fWrong usage&c! &7/report <player> <reason>
@@ -884,7 +939,7 @@ on death:
 			add 1 to {kills.%attacker%}
 
 on chat:
-	if message contains "shit" or "fuck" or "gay" or "idiot" or "butt" or "jerk" or "damn" or "shit" or "fack" or "bastard" or "mother fucker" or "fucker" or "dick" or "cock" or "bitch" or "cunt" or "fuck off" or "nigga" or "nigger" or "stfu" or "shut the fuck up" or "fck" or "wtf" or "what the fuck" or "fuck you" or "fok" or "homo" or "asf" or "pennis" or "rape" or "porn" or "prn" or "peni" or "sex" or "piss" or "ass" or "sht" or "feg" or "tits" or "fyc" or "anal" or "fap" or "ffs" or "sx" or "aids" or "mofo" or "niggah" or "lesbian" or "ngga" or "dumbass" or "dumb" or "fucking" or "pussy" or "pussies" or "cancer" or "net" or "com" or "xyz" or "biz" or "serv.nu" or "tebex" or "io" or "no" or "de" or "uk.to" or "us.to": 
+	if message contains "shit" or "fuck" or "gay" or "idiot" or "butt" or "jerk" or "damn" or "shit" or "fack" or "bastard" or "mother fucker" or "fucker" or "dick" or "cock" or "bitch" or "cunt" or "fuck off" or "nigga" or "nigger" or "stfu" or "shut the fuck up" or "fck" or "wtf" or "what the fuck" or "fuck you" or "fok" or "homo" or "asf" or "pennis" or "rape" or "porn" or "prn" or "peni" or "sex" or "piss" or "ass" or "sht" or "feg" or "tits" or "fyc" or "anal" or "fap" or "ffs" or "sx" or "aids" or "mofo" or "niggah" or "lesbian" or "ngga" or "dumbass" or "dumb" or "fucking" or "pussy" or "pussies" or "cancer" or "net" or "com" or "xyz" or "biz" or "serv.nu" or ".no" or ".pl" or ".de" or ".tv" or ".gg" or ".minehut" or "niger" or "nigar" or "nigerr" or "n!ger" or "n1ger" or "fag" or "smoke" or "cancer" or "ligma" or "sumac" or "deez nuts" or "uk.to" or "us.to": 
 		if player has permission "essentials.chat.bypass":
 			stop
 		else:
@@ -894,7 +949,17 @@ on chat:
 				loop-player has permission "essentials.chat.check"
 				message "&c[&f%{playerswore}% Just swore or advertised!&c]" to loop-player
 
+function clearChat(p: player):
+	loop 500 times:
+		send "&r " to {_p}
+
+function clearChatGlobal():
+	loop 500 times:
+		broadcast "&r "
+
 every 10 minutes:
-	execute console command "/cc"
+	if {consoleclearchat} is true:
+		clearChatGlobal()
+		broadcast "&cConsole has cleared chat as ordered"
 
 
